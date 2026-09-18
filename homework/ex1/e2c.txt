@@ -1,0 +1,51 @@
+drop table if exists hourlog;
+drop table if exists project;
+drop table if exists department cascade;
+drop table if exists employee cascade;
+
+create table employee
+(
+  ssn char(5),
+  name varchar(20),
+  salary numeric(8,2),
+  dno char(3),
+
+  primary key (ssn)
+);
+
+create table department
+(
+  dno char(3),
+  dept_name varchar(20),
+  mgr_ssn char(5),
+
+  primary key(dno)
+);
+
+alter table employee 
+  add constraint employee_fk_dno foreign key (dno) references department initially deferred;
+alter table department
+  add constraint department_fk_mgr_ssn foreign key (mgr_ssn) references employee(ssn) initially deferred; 
+
+create table project
+(
+  pno int,
+  location varchar(20),
+  proj_name varchar(20),
+  dno char(3) not null,
+
+  primary key (pno),
+  foreign key (dno) references department
+);
+
+create table hourlog
+(
+  ssn char(5),
+  pno int,
+  hours int,
+  
+  primary key(ssn, pno),
+  foreign key(ssn) references employee,
+  foreign key(pno) references project
+);
+

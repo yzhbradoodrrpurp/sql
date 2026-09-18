@@ -1,0 +1,39 @@
+begin;
+insert into department (dno, dept_name, mgr_ssn) values('101', 'HR', '10001');
+insert into department (dno, dept_name, mgr_ssn) values('102', 'FI', '20001');
+insert into department (dno, dept_name, mgr_ssn) values('103', 'D1', '30001');
+insert into department (dno, dept_name, mgr_ssn) values('104', 'D2', '40001');
+
+insert into employee(ssn, name, salary, dno) values('10001','Zhao',20000, '101');
+insert into employee(ssn, name, salary, dno) values('20001','Singh',19000, '102');
+insert into employee(ssn, name, salary, dno) values('30001','Sun',15000, '103');
+insert into employee(ssn, name, salary, dno) values('40001','Li',14800, '104');
+insert into employee(ssn, name, salary, dno) values('30002','Zhou',13500, '103');
+insert into employee(ssn, name, salary, dno) values('30003','Wu',13800, '103');
+
+insert into project(pno, location,proj_name,dno) values(1,'WJ','Jumping','101');
+insert into project(pno, location,proj_name,dno) values(2,'WJ','Singing','102');
+insert into project(pno, location,proj_name,dno) values(3,'WJ','Dancing','103');
+insert into project(pno, location,proj_name,dno) values(4,'JA','Flying','104');
+insert into project(pno, location,proj_name,dno) values(5,'WJ','Jumping A','101');
+insert into project(pno, location,proj_name,dno) values(6,'WJ','Singing A','102');
+insert into project(pno, location,proj_name,dno) values(7,'WJ','Dancing A','103');
+insert into project(pno, location,proj_name,dno) values(8,'JA','Flying A','104');
+
+insert into hourlog(ssn,pno,hours) values('10001',1,120);
+insert into hourlog(ssn,pno,hours) values('10001',2,50);
+insert into hourlog(ssn,pno,hours) values('10001',5,20);
+insert into hourlog(ssn,pno,hours) values('10001',6,180);
+insert into hourlog(ssn,pno,hours) values('10001',8,110);
+insert into hourlog(ssn,pno,hours) values('20001',1,80);
+insert into hourlog(ssn,pno,hours) values('20001',2,50);
+insert into hourlog(ssn,pno,hours) values('20001',5,20);
+insert into hourlog(ssn,pno,hours) values('30001',6,180);
+insert into hourlog(ssn,pno,hours) values('40001',8,90);
+
+
+commit;
+
+
+
+
