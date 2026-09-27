@@ -1,0 +1,2 @@
+psql:homework/ex2/answers.sql:80: ERROR:  update or delete on table "course" violates foreign key constraint "prereq_prereq_id_fkey" on table "prereq"
+DETAIL:  Key (course_id)=(CS-101) is still referenced from table "prereq".

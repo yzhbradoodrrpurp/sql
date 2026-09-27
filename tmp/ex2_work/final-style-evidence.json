@@ -1,0 +1,81 @@
+{
+  "input": "/Users/yzhbradoodrrpurp/Desktop/sql/homework/ex2/2023141220023_\u6613\u6cbb\u884c_Basic_SQL_Exercise_2.docx",
+  "fonts_by_char_count": {
+    "Times New Roman": 3037,
+    "Courier New": 2647
+  },
+  "direct_run_formatting_runs": 74,
+  "direct_paragraph_formatting_paragraphs": 45,
+  "heading_like_paragraphs_not_heading_style": [
+    {
+      "para_index": 1,
+      "text": "Basic SQL Exercise 2",
+      "style": "Title"
+    },
+    {
+      "para_index": 29,
+      "text": "2. Consider the following employee database\uff1a ",
+      "style": "Normal"
+    }
+  ],
+  "examples": {
+    "direct_paragraph_formatting": [
+      {
+        "para_index": 1,
+        "text": "Basic SQL Exercise 2",
+        "style": "Title"
+      },
+      {
+        "para_index": 2,
+        "text": "",
+        "style": "Normal"
+      },
+      {
+        "para_index": 3,
+        "text": "This exercise does not provide schema-creation or data-insertion files. You may write the SQL statements directly, or cr",
+        "style": "Normal"
+      },
+      {
+        "para_index": 4,
+        "text": "Part 1 University Schema Data Modifications",
+        "style": "Heading 1"
+      },
+      {
+        "para_index": 6,
+        "text": " a. Increase the salary of each instructor in the Comp. Sci. department by 10%. ",
+        "style": "Normal"
+      }
+    ],
+    "direct_run_formatting": [
+      {
+        "para_index": 1,
+        "run_text": "Basic SQL Exercise 2",
+        "style": "Title"
+      },
+      {
+        "para_index": 3,
+        "run_text": "This exercise does not provide schema-creation or data-insertion files. You may ",
+        "style": "Normal"
+      },
+      {
+        "para_index": 4,
+        "run_text": "Part 1 University Schema Data Modifications",
+        "style": "Heading 1"
+      },
+      {
+        "para_index": 5,
+        "run_text": "1. Write the following inserts, deletes or updates in SQL, using the university ",
+        "style": "Normal"
+      },
+      {
+        "para_index": 6,
+        "run_text": " a. Increase the salary of each instructor in the Comp. Sci. department by 10%. ",
+        "style": "Normal"
+      }
+    ]
+  },
+  "notes": [
+    "Direct formatting is not always wrong, but it often causes inconsistent output when templates change.",
+    "Heading-like paragraphs not using Heading styles can break TOC and accessibility."
+  ]
+}
