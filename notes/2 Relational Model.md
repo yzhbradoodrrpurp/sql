@@ -200,8 +200,6 @@ t_r \in R \land t_s \in S
 
 ![naturaljoin](resources/naturaljoin.png)
 
-#### 除
-
 ## 关系的完整性要求
 
 关系模型的完整性要求是对关系的某种约束条件，主要有三类完整性要求：
