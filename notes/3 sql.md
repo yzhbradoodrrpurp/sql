@@ -405,23 +405,18 @@ id in (select college from teacher group by college having avg(salary) >= all(se
 带有 `exists` 谓词的子查询不返回任何实际数据，而是根据子查询结果返回 true/false。
 
 > ```sql
-> SELECT s.id, s.name
-> FROM student AS s
-> WHERE EXISTS (
->     SELECT 1
->     FROM grade AS g
->     WHERE g.student = s.id
->       AND g.course = 'C01'
-> );
-> ```
->
-> 可以这样理解：
->
+> SELECT s.id, s.name FROM student AS s WHERE
+> EXISTS (SELECT * FROM grade AS g WHERE 
+>         g.student = s.id AND g.course = 'C01');
+>    ```
+>    
+>    可以这样理解：
+>    
 > - 对外层的某个学生，子查询用这个学生的 `s.id` 去查 `grade`。
 > - 如果至少找到一条符合条件的记录，`EXISTS` 为 **TRUE**，保留该学生。
-> - 如果一条都找不到，`EXISTS` 为 **FALSE**，不保留该学生。
->
-> 子查询中的 `SELECT 1` 只是提供一个表达式；`EXISTS` 关心的是**有没有结果行**，不关心返回的具体值。
+>- 如果一条都找不到，`EXISTS` 为 **FALSE**，不保留该学生。
+> 
+>子查询中的 `SELECT 1` 只是提供一个表达式；`EXISTS` 关心的是**有没有结果行**，不关心返回的具体值。
 
 ````sql
 /* 查询所有选修了1号课程的学生姓名 */
@@ -445,4 +440,55 @@ not exists (select * from course where
 
 ### 更新
 
- 
+ #### 插入
+
+插入元组的语句格式：
+
+````sql
+insert into <table> (<column1>, <column2>) values (<value1>, <value2>);
+
+/* 给学生的课程添加成绩 */
+insert into grade (student, course, score) values ('10010010010', '01010101011', 99);
+
+/* 插入学院  */
+insert into college values ('89762134764', 'college of computer science');
+````
+
+- 如果某些属性在 `into` 后没有出现，这些分量会取 `null` （前提不是主键并且没有定义 `not null`）
+- 如果 `into` 后没有声明属性，那么新插入记录每个分量都必须有值并且顺序和定义时属性的顺序一致
+
+以上插入是知道值进行的插入，同时可以通过 `select` 进行插入：
+
+````sql
+insert into <table1> select <column1>, <column2> from <table2> ...;
+
+/* 插入把学院平均薪资 */
+alter table college add column avg_salary int;
+alter table college add constraint avg_salary_check check (avg_salary >= 0);
+insert into college(id, avg_salary) select college, avg(salary) from teacher group by college;
+````
+
+#### 修改
+
+
+
+#### 删除
+
+删除表中元组的语句格式：
+````sql
+delete from <table> where <condition>;
+
+/* 删除所有姓易的学生 */
+delete from student where name like '易%';
+
+/* 删除grade表中的所有记录，让其成为空表 */
+delete from grade;
+
+/* 删除考过60分以下同学 */
+delete from student where id in (select student from grade where score < 60);
+````
+
+- `delete` 语句删除的是表中的元组，`drop` 语句删除的是表的定义
+
+- 删除指令中可以叠加**子查询**
+
