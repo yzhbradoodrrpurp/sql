@@ -39,7 +39,7 @@ SQL的特点：
 - 两种使用方式：既是自含式语言可以自己单独编写，又是嵌入式语言可以嵌入到C/C++等
 - 使用简洁统一：核心功能只需9个动词 `select`, `create`, `drop`, `alter`, `insert`, `update`, `delete`, `grant`, `revoke`
 
-## SQL操作
+## 表格
 
 ### 数据类型
 
@@ -229,9 +229,9 @@ where 中的条件有：
 /* 有以下关系 */
 create table student(
   id char(13),
-  name varchar(40) not null,
-  birth date not null,
-  gender char(2) not null,
+  name varchar(40),
+  birth date,
+  gender char(2),
   college char(13),
   primary key (id),
   foreign key (college) references college(id)
@@ -239,9 +239,9 @@ create table student(
 
 create table teacher(
 	id char(13),
-  name varchar(40) not null,
+  name varchar(40),
   college char(13),
-  salary int not null,
+  salary int,
   primary key (id),
   foreign key (college) references college(id),
   check (salary >= 0)
@@ -249,7 +249,7 @@ create table teacher(
 
 create table college(
 	id char(13),
-  name varchar(40) not null,
+  name varchar(40),
   primary key (id),
   unique (name)
 );
@@ -353,6 +353,19 @@ select <table1>.<column1> from <table1>, <table2> where
 select student.name, course.name, grade.score from student, course, grade where student.id = grade.student and course.id = grade.course and grade >= 90;
 ```
 
+可以用 `join` 来进行连接查询：
+
+- `inner join`：最后连接的大表中只保留成功连接的元组，`join` 默认是 `inner join`
+- `natural join`：自动按照同名的属性进行连接
+- `outter join`： 外连接，同时分为 `left outter join`, `right outter join`, `full outter join`
+
+````sql
+select <table1>.<column1>, <table2>.<column2> from <table1> join <table2> on <table1>.<column11> = <table2>.<column22>;
+
+/* 查询成绩大于等于90分的学生名、课程和分数 */
+select student.name, course.name, grade.score from student join grade on student.id = grade.student join course on grade.course = course.id where grade.score >= 90;
+````
+
 #### 嵌套查询
 
 将**一个查询块**嵌套在另一个查询块的 `WHERE` 或 `HAVING` **条件**中的**查询**称为嵌套查询或子查询。
@@ -420,8 +433,8 @@ id in (select college from teacher group by college having avg(salary) >= all(se
 
 ````sql
 /* 查询所有选修了1号课程的学生姓名 */
-select name from student s where
-exists (select * from grade g where s.id = g.student and g.course = '00000000001');
+select name from student as s where
+exists (select * from grade as g where s.id = g.student and g.course = '00000000001');
 ````
 
 可以利用双重 `not exists` 来做到全称量词。
@@ -438,9 +451,7 @@ not exists (select * from course where
                         student.id = grade.student and grade.course = course.id));
 ````
 
-### 更新
-
- #### 插入
+ ### 插入
 
 插入元组的语句格式：
 
@@ -468,13 +479,35 @@ alter table college add constraint avg_salary_check check (avg_salary >= 0);
 insert into college(id, avg_salary) select college, avg(salary) from teacher group by college;
 ````
 
-#### 修改
+### 更新
 
+更新表格中已有元组的分量：
 
+- `update` 修改的是表中的元组，`alter` 修改的是表的定义
+- `update` 指令可以叠加子查询
 
-#### 删除
+````sql
+update <table> set <column1> = <expression1>[, <column2> = <expression2>] [where <condition>];
+
+/* 给计算机学院老师的薪资涨2000 */
+update teacher set salary = salary + 2000 where college = '89762134764';
+
+/* 计算机学院的学生的成绩都减五分 */
+update grade set score = score - 5 where student in (select id from student where college = '89762134764');
+````
+
+> [!NOTE]
+>
+> 更新数据时必须满足完整性定义，也就是说再一个表中的数据更新之后，在其他表中有关联的数据也必须更新。
+
+### 删除
 
 删除表中元组的语句格式：
+
+- `delete` 语句删除的是表中的元组，`drop` 语句删除的是表的定义
+
+- `delete` 可以叠加**子查询**
+
 ````sql
 delete from <table> where <condition>;
 
@@ -488,7 +521,73 @@ delete from grade;
 delete from student where id in (select student from grade where score < 60);
 ````
 
-- `delete` 语句删除的是表中的元组，`drop` 语句删除的是表的定义
+## 视图
 
-- 删除指令中可以叠加**子查询**
+视图：从一个或者多个基本表（或者视图）导出的表，是虚表。
 
+> 数据库中只保存视图的定义，不保存实际数据。
+
+视图的优点：
+
+- 简化用户操作
+- 方便复杂查询
+- 对机密数据提供安全保护
+
+### 定义
+
+创建视图的基本格式：
+
+````sql
+create view <view> [(<column1>, <column2>)] as <子查询> with check option;
+
+/* 创建老师工资的视图 */
+create view salary as select name, salary from teacher with check option;
+````
+
+视图根据定义可以分为三种视图：
+
+- 行列子集视图：从一个基本表中导出，只是去掉了某些行或列（保留主码）
+- 带表达式的视图：`<子查询>` 的选择列名中有表达式
+- 分组视图：子查询带集函数和 `GROUP BY` 分组的视图
+
+和基本表类似，视图也可以删除：
+
+```sql
+drop view <view> [cascade/restrict];
+```
+
+删除视图不会影响基本表及其中的记录。
+
+### 查询
+
+对于视图的查询和对于基本表的查询是完全一致的，具体查看[基本表的查询](###查询)。
+
+### 插入
+
+对视图的更新最终是转换为对数据库中实际的基本表的更新，操作通过DBMS完成。
+
+> [!NOTE]
+>
+> 为防止用户通过视图对数据进行增删改时无意操作不属于视图范围内的基本表数据，在定义视图时往往加上 `WITH CHECK OPTION`。
+
+对于视图的插入和对于基本表的插入是一致的，具体查看[基本表的插入](####插入)。
+
+### 更新
+
+对于视图的更新和对于基本表的更新是一致的，具体查看[基本表的更新](####更新)。
+
+通过视图更新基本表，从理论上来说有的是可以更新的，有的是根本不可能更新的。
+
+````sql
+/* 创建学生成绩平均分视图 */
+create view average_score (name, score) as select student.name, avg(score) from student, grade where student.id = grade.student group by student.id with check option;
+
+/* 这样的修改是不可能的，因为在基本表中修改哪个实际的成绩是不知道的 */
+update average_score set score += 5 where name = 'liam';
+````
+
+### 删除
+
+对于视图的删除和对于基本表的删除是一致的，具体查看[基本表的删除](####删除)。
+
+**对于支持删除的普通视图**，通过视图删除一条记录，实际删除的是底层基本表中对应的记录。
