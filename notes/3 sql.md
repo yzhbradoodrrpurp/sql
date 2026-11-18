@@ -591,3 +591,112 @@ update average_score set score += 5 where name = 'liam';
 对于视图的删除和对于基本表的删除是一致的，具体查看[基本表的删除](####删除)。
 
 **对于支持删除的普通视图**，通过视图删除一条记录，实际删除的是底层基本表中对应的记录。
+
+## 断言
+
+SQL 可以使用 `create assertion` 来通过断言声明一般性的约束：
+
+````sql
+create assertion <name> check <(condition)>;
+
+/* 规定每门课最多只能120名学生 */
+create assertion capacity check (120 >= all(select count(student) from grade group by course));
+````
+
+同样地，可以删除断言：
+````sql
+drop assertion <name>;
+
+/* 删除capacity断言 */
+drop assertion capacity;
+````
+
+> [!NOTE]
+>
+> 断言和列级约束、表级约束的区别是：
+>
+> - 断言：针对于表本身
+> - 列级约束和表级约束：针对于基本表中的每个元组的分量
+
+## 索引
+
+索引是一种数据结构，允许数据库系统高效找到在关系中的元组而不必扫描整个基本表。
+
+定义索引的格式是：
+
+```sql
+create [unique] index <name> ON <table> (<column1> [asc/desc], ...);
+
+/* 针对成绩进行索引，默认是升序 */
+create index score_idx on grade (score);
+```
+
+删除索引的格式是：
+
+```sql
+drop index score_idx;
+```
+
+> [!NOTE]
+>
+> 索引只能定义在基本表上。
+
+## 授权
+
+授权：数据库中谁可以对哪些对象执行哪些操作。
+
+赋予授权的基本格式：
+
+````sql
+grant <operation1>[, operation2] on <table/view> to <user1>[, user2];
+
+/* 让liam这个用户能够增删改student表 */
+grant delete, update, insert on student to liam, bob;
+````
+
+- `all privileges` 指代所有的操作
+- `public` 指代所有用户
+
+回收授权的基本格式：
+
+````sql
+revoke <operation1>[, operation2] on <table/view> from <user>[, user2];
+
+/* 让liam这个用户不能够增删改student表 */
+revoke delete, update, insert on student from liam, bob;
+````
+
+角色：把一组权限交给一个角色，这个角色表示一类用户。
+
+角色的定义如下：
+
+````sql
+create role <name>;
+grant <name> to <user>;
+
+/* 创建cs学生视图并只让cs教师看到 */
+create view cs_student as 
+select * from student where college = (select id from college where name = 'college of computer science');
+
+create role cs_faculty;
+grant select on cs_student to cs_faculty;
+grant cs_faculty to tao_wang, mingjie_tang;
+````
+
+普通 `grant` 是让普通用户自己具有某种权限， `with grant option` 能够让被授权的用户拥有授权别人的权限：
+
+````sql
+grant <operation1>[, operation2] on <table/view> to <user1>[, user2] with grant option;
+
+/* 让cs教职员工能够赋予别人权限 */
+grant select on cs_student to cs_faculty with grant option;
+````
+
+可以通过以下操作将赋予授权操作收回：
+```sql
+revoke <operation1>[, operation2] on <table/view> from <user>[, user2] [cascade/restrict];
+
+/* 收回cs教职员工的权限 */
+revoke select on cs_student from cs_faculty cascade;
+```
+
